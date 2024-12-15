@@ -19,10 +19,16 @@ func main() {
 	}
 
 	HealthController := controller.NewHealthController()
-	productController := controller.NewProductController(usecase.NewProductUseCase(repository.NewProductRepository(dbConnection)))
+	productsRepo := repository.NewProductRepository(dbConnection)
+
+	productController := controller.NewProductController(
+		usecase.NewCreateProductUseCase(productsRepo),
+		usecase.NewGetProductsUseCase(productsRepo),
+	)
 
 	server.GET("/health", HealthController.CheckHealth)
 	server.POST("/products", middleware.AuthenticateJWT(), productController.CreateProduct)
+	server.GET("/products", middleware.AuthenticateJWT(), productController.GetProducts)
 
 	server.Run(":3001")
 }

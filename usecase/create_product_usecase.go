@@ -6,17 +6,17 @@ import (
 	"products_api/repository"
 )
 
-type ProductUsecase struct {
+type CreateProductUsecase struct {
 	Repository repository.ProductRepository
 }
 
-func NewProductUseCase(repository repository.ProductRepository) ProductUsecase {
-	return ProductUsecase{
+func NewCreateProductUseCase(repository repository.ProductRepository) CreateProductUsecase {
+	return CreateProductUsecase{
 		Repository: repository,
 	}
 }
 
-func (pu *ProductUsecase) CreateProduct(product model.Product) (string, error) {
+func (pu *CreateProductUsecase) Execute(product model.Product) (string, error) {
 	location, err := pu.Repository.SaveProduct(product)
 
 	if err != nil {
