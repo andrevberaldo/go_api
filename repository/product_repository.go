@@ -1,20 +1,39 @@
 package repository
 
-import "products_api/model"
+import (
+	"database/sql"
+	"fmt"
+	"products_api/model"
+)
 
 type ProductRepository struct {
+	Connection *sql.DB
 }
 
-func NewProductRepository() ProductRepository {
-	return ProductRepository{}
+func NewProductRepository(dbconnection *sql.DB) ProductRepository {
+	return ProductRepository{
+		Connection: dbconnection,
+	}
 }
 
-func (pr *ProductRepository) SaveProduct(product model.Product) (model.Product, error) {
-	created := model.Product{
-		ID:    333,
-		Name:  product.Name,
-		Price: product.Price,
+func (pr *ProductRepository) SaveProduct(product model.Product) (string, error) {
+	query, err := pr.Connection.Prepare("INSERT INTO products(name, price) VALUES ($1, $2) RETURNING id")
+
+	if err != nil {
+		fmt.Printf("Error trying to save Product %s", err.Error())
+		return "", err
 	}
 
-	return created, nil
+	var id int
+
+	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+
+	if err != nil {
+		fmt.Printf("Error trying to save Product %s", err.Error())
+		return "", err
+	}
+
+	query.Close()
+
+	return fmt.Sprintf("/products/%d", id), nil
 }
