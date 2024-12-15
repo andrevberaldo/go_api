@@ -16,17 +16,13 @@ func NewProductUseCase(repository repository.ProductRepository) ProductUsecase {
 	}
 }
 
-func (pu *ProductUsecase) CreateProduct(product model.Product) (model.Product, error) {
-	created, err := pu.Repository.SaveProduct(product)
+func (pu *ProductUsecase) CreateProduct(product model.Product) (string, error) {
+	location, err := pu.Repository.SaveProduct(product)
 
 	if err != nil {
 		fmt.Printf("Error creating new Product")
-		return model.Product{
-			ID:    0,
-			Name:  "",
-			Price: 0,
-		}, err
+		return "", err
 	}
 
-	return created, nil
+	return location, nil
 }

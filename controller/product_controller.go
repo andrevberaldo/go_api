@@ -32,14 +32,17 @@ func (pc *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	created, err := pc.ProductUsecase.CreateProduct(product)
+	location, err := pc.ProductUsecase.CreateProduct(product)
 
 	if err != nil {
 		fmt.Printf("Failure on creating a new Product %v", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
+		return
 	}
 
-	ctx.JSON(http.StatusCreated, created)
+	ctx.JSON(http.StatusCreated, gin.H{
+		"url": "http://localhost:3001" + location,
+	})
 }
