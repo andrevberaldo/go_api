@@ -1,0 +1,30 @@
+name: go_api
+
+services:
+    database:
+        container_name: db_pg_latest
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=1234
+            - POSTGRES_USER=api
+        ports:
+            - 5432:5432
+        volumes:
+            - ./data/postgres:/var/lib/postgresql/data
+        restart: always       
+
+    pg_admin:
+        image: dpage/pgadmin4:latest
+        container_name: dcs-pgadmin
+        restart: always
+        depends_on: 
+            - database
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=user@localhost.com
+            - PGADMIN_DEFAULT_PASSWORD=1234  
+        ports:
+            - 8080:80
+        volumes:
+            - ./data/pgadmin:/var/lib/pgadmi    
+
+
