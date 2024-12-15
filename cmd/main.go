@@ -9,7 +9,10 @@ import (
 func main() {
 	server := gin.Default()
 	HealthController := controller.NewHealthController()
+	ProductController := controller.NewProductController()
+
 	server.GET("/health", HealthController.CheckHealth)
+	server.POST("/products", ProductController.CreateProduct)
 
 	server.Run(":3001")
 }
