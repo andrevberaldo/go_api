@@ -4,7 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"products_api/db"
+	"products_api/middleware"
 	"products_api/model"
+	"products_api/repository"
 	"products_api/usecase"
 	"strconv"
 
@@ -30,6 +33,31 @@ func NewProductController(
 		getProductsUseCase:    getProductsUseCase,
 		getProductByIdUseCase: getProductByIdUseCase,
 		deleteProductUseCase:  deleteProductUseCase,
+	}
+}
+
+func InitializeProductController(server *gin.Engine) {
+	dbConnection, err := db.ConnectDB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	productsRepo := repository.NewProductRepository(dbConnection)
+
+	productController := NewProductController(
+		usecase.NewCreateProductUseCase(productsRepo),
+		usecase.NewGetProductsUseCase(productsRepo),
+		usecase.NewGetProductByIdUseCase(productsRepo),
+		usecase.NewDeleteProductUseCase(productsRepo),
+	)
+
+	api := server.Group("/api", middleware.AuthenticateJWT())
+	{
+		api.POST("/products", productController.CreateProduct)
+		api.GET("/products", productController.GetProducts)
+		api.GET("/products/:id", productController.GetProductById)
+		api.DELETE("/products/:id", productController.DeleteProduct)
 	}
 }
 
