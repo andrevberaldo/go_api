@@ -1,23 +1,32 @@
 package controller
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"products_api/model"
 	"products_api/usecase"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ProductController struct {
-	createProductUseCase usecase.CreateProductUsecase
-	getProductsUseCase   usecase.GetProductsUseCase
+	createProductUseCase  usecase.CreateProductUsecase
+	getProductsUseCase    usecase.GetProductsUseCase
+	getProductByIdUseCase usecase.GetProductByIdUseCase
 }
 
-func NewProductController(createUsecase usecase.CreateProductUsecase, getProductsUseCase usecase.GetProductsUseCase) ProductController {
+func NewProductController(
+	createUsecase usecase.CreateProductUsecase,
+	getProductsUseCase usecase.GetProductsUseCase,
+	getProductByIdUseCase usecase.GetProductByIdUseCase,
+) ProductController {
+
 	return ProductController{
-		createProductUseCase: createUsecase,
-		getProductsUseCase:   getProductsUseCase,
+		createProductUseCase:  createUsecase,
+		getProductsUseCase:    getProductsUseCase,
+		getProductByIdUseCase: getProductByIdUseCase,
 	}
 }
 
@@ -57,7 +66,46 @@ func (pc *ProductController) GetProducts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, products)
+}
+
+func (pc *ProductController) GetProductById(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		fmt.Printf("An product id must be provided")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "An product id must be provided",
+		})
+		return
+	}
+
+	productId, err := strconv.Atoi(id)
+
+	if err != nil {
+		fmt.Printf("Could not parse string to int")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not parse string to int",
+		})
+		return
+	}
+
+	product, err := pc.getProductByIdUseCase.Execute(productId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Printf("Failure on get Product %v", err.Error())
+			ctx.JSON(http.StatusNotFound, gin.H{})
+			return
+		}
+
+		fmt.Printf("Failure on get Product %v", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, product)
 }

@@ -69,3 +69,29 @@ func (pr *ProductRepository) ListAll() ([]model.Product, error) {
 
 	return products, nil
 }
+
+func (pr *ProductRepository) GetProductById(id int) (model.Product, error) {
+	query, err := pr.Connection.Prepare("SELECT id, name, price FROM products WHERE id=$1")
+
+	if err != nil {
+		fmt.Printf("Unable to load product_id=%v from database due to %v", id, err.Error())
+		return model.Product{}, err
+	}
+
+	var product model.Product
+
+	err = query.QueryRow(id).Scan(
+		&product.ID,
+		&product.Name,
+		&product.Price,
+	)
+
+	if err != nil {
+		fmt.Printf("Unable to load product_id=%v from database due to %v", id, err.Error())
+		return model.Product{}, err
+	}
+
+	query.Close()
+
+	return product, nil
+}
