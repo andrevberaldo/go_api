@@ -95,3 +95,14 @@ func (pr *ProductRepository) GetProductById(id int) (model.Product, error) {
 
 	return product, nil
 }
+
+func (pr *ProductRepository) DeleteProduct(id int) error {
+	_, err := pr.Connection.Exec("DELETE FROM products WHERE id=$1", id)
+
+	if err != nil {
+		fmt.Printf("Unable to delete product id %v", id)
+		return err
+	}
+
+	return nil
+}

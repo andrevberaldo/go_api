@@ -15,18 +15,21 @@ type ProductController struct {
 	createProductUseCase  usecase.CreateProductUsecase
 	getProductsUseCase    usecase.GetProductsUseCase
 	getProductByIdUseCase usecase.GetProductByIdUseCase
+	deleteProductUseCase  usecase.DeleteProductUseCase
 }
 
 func NewProductController(
 	createUsecase usecase.CreateProductUsecase,
 	getProductsUseCase usecase.GetProductsUseCase,
 	getProductByIdUseCase usecase.GetProductByIdUseCase,
+	deleteProductUseCase usecase.DeleteProductUseCase,
 ) ProductController {
 
 	return ProductController{
 		createProductUseCase:  createUsecase,
 		getProductsUseCase:    getProductsUseCase,
 		getProductByIdUseCase: getProductByIdUseCase,
+		deleteProductUseCase:  deleteProductUseCase,
 	}
 }
 
@@ -108,4 +111,39 @@ func (pc *ProductController) GetProductById(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, product)
+}
+
+func (pc *ProductController) DeleteProduct(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		fmt.Printf("An product id must be provided")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "An product id must be provided",
+		})
+		return
+	}
+
+	productId, err := strconv.Atoi(id)
+
+	if err != nil {
+		fmt.Printf("Could not parse string to int")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not parse string to int",
+		})
+		return
+	}
+
+	err = pc.deleteProductUseCase.Execute(productId)
+
+	if err != nil {
+		fmt.Printf("Could not delete product")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not delete product",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{})
+
 }
