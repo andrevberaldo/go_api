@@ -24,11 +24,13 @@ func main() {
 	productController := controller.NewProductController(
 		usecase.NewCreateProductUseCase(productsRepo),
 		usecase.NewGetProductsUseCase(productsRepo),
+		usecase.NewGetProductByIdUseCase(productsRepo),
 	)
 
 	server.GET("/health", HealthController.CheckHealth)
 	server.POST("/products", middleware.AuthenticateJWT(), productController.CreateProduct)
 	server.GET("/products", middleware.AuthenticateJWT(), productController.GetProducts)
+	server.GET("/products/:id", middleware.AuthenticateJWT(), productController.GetProductById)
 
 	server.Run(":3001")
 }
