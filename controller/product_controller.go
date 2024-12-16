@@ -10,12 +10,14 @@ import (
 )
 
 type ProductController struct {
-	ProductUsecase usecase.ProductUsecase
+	createProductUseCase usecase.CreateProductUsecase
+	getProductsUseCase   usecase.GetProductsUseCase
 }
 
-func NewProductController(usecase usecase.ProductUsecase) ProductController {
+func NewProductController(createUsecase usecase.CreateProductUsecase, getProductsUseCase usecase.GetProductsUseCase) ProductController {
 	return ProductController{
-		ProductUsecase: usecase,
+		createProductUseCase: createUsecase,
+		getProductsUseCase:   getProductsUseCase,
 	}
 }
 
@@ -32,7 +34,7 @@ func (pc *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	location, err := pc.ProductUsecase.CreateProduct(product)
+	location, err := pc.createProductUseCase.Execute(product)
 
 	if err != nil {
 		fmt.Printf("Failure on creating a new Product %v", err.Error())
@@ -45,4 +47,17 @@ func (pc *ProductController) CreateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{
 		"url": "http://localhost:3001" + location,
 	})
+}
+
+func (pc *ProductController) GetProducts(ctx *gin.Context) {
+	products, err := pc.getProductsUseCase.Execute()
+
+	if err != nil {
+		fmt.Printf("Failure on creating a new Product %v", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, products)
 }

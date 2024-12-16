@@ -37,3 +37,35 @@ func (pr *ProductRepository) SaveProduct(product model.Product) (string, error) 
 
 	return fmt.Sprintf("/products/%d", id), nil
 }
+
+func (pr *ProductRepository) ListAll() ([]model.Product, error) {
+	products := []model.Product{}
+
+	rows, err := pr.Connection.Query("SELECT id, name, price FROM products")
+
+	if err != nil {
+		fmt.Print("Unable to load products from database")
+		return products, err
+	}
+
+	var product model.Product
+
+	for rows.Next() {
+		err = rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.Price,
+		)
+
+		if err != nil {
+			fmt.Print("Unable to load products from database")
+			return products, err
+		}
+
+		products = append(products, product)
+	}
+
+	rows.Close()
+
+	return products, nil
+}
