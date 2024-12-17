@@ -19,6 +19,17 @@
  ```
  - Run `go run ./cmd/main.go` 
  - To use the **protected routes** on /api path, the request headers must have the fake JWT at `Authorization: fake_token_JWT`
+ - Make a GET request to http://localhost:3001/api/products
+
+ ```curl
+ GET http://localhost:3001/api/products
+ POST http://localhost:3001/api/products
+ GET http://localhost:3001/api/products/:productId
+ DELETE http://localhost:3001/api/products/:productId
+
+ UPDATE NOT IMPLEMENTED
+ PATCH NOT IMPLEMENTED
+ ```
 
  ## Next steps
  - Unit test
