@@ -6,7 +6,7 @@
 
 ## How to Run
 
- - need Docker Engine and Docker compose is needed.
+ - Docker Engine and Docker compose is needed.
  - Run `docker compose up` in the terminal
  - Once the container is running
  - The PGAdmin will start at localhost:8080, you can connect with postgres DB and run the following script to create products table.
@@ -21,6 +21,5 @@
  - To use the **protected routes** on /api path, the request headers must have the fake JWT at `Authorization: fake_token_JWT`
 
  ## Next steps
- - Dockerize the project
  - Unit test
  - Lint 

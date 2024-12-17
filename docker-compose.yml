@@ -1,6 +1,20 @@
 name: go_api
 
 services:
+    # api:
+    #     build: .
+    #     container_name: go_api
+    #     depends_on:
+    #         - database
+    #     ports: 
+    #         - "3001:3001"
+    #     environment:
+    #         - "DATABASE_INFO=host=localhost port=5432 user=api password=1234 dbname=products_api sslmode=disable"
+    #         - "DB_NAME=products_api"
+    #         - "PORT=:3001"
+    #     networks:
+    #         - api_network 
+
     database:
         container_name: db_pg_latest
         image: postgres
@@ -12,7 +26,9 @@ services:
             - 5432:5432
         volumes:
             - ./data/postgres:/var/lib/postgresql/data
-        restart: always       
+        restart: always
+        networks:
+            - api_network       
 
     pg_admin:
         image: dpage/pgadmin4:latest
@@ -26,6 +42,12 @@ services:
         ports:
             - 8080:80
         volumes:
-            - ./data/pgadmin:/var/lib/pgadmi    
+            - ./data/pgadmin:/var/lib/pgadmi 
+        networks:
+            - api_network  
+
+networks:
+    api_network:
+        driver: bridge
 
 
