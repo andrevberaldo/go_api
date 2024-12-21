@@ -16,7 +16,7 @@ func NewProductRepository(dbconnection *sql.DB) ProductRepository {
 	}
 }
 
-func (pr *ProductRepository) SaveProduct(product model.Product) (string, error) {
+func (pr *ProductRepository) Save(product model.Product) (string, error) {
 	query, err := pr.Connection.Prepare("INSERT INTO products(name, price) VALUES ($1, $2) RETURNING id")
 
 	if err != nil {
@@ -35,7 +35,7 @@ func (pr *ProductRepository) SaveProduct(product model.Product) (string, error) 
 
 	query.Close()
 
-	return fmt.Sprintf("/products/%d", id), nil
+	return fmt.Sprintf("/api/products/%d", id), nil
 }
 
 func (pr *ProductRepository) ListAll() ([]model.Product, error) {
@@ -70,7 +70,7 @@ func (pr *ProductRepository) ListAll() ([]model.Product, error) {
 	return products, nil
 }
 
-func (pr *ProductRepository) GetProductById(id int) (model.Product, error) {
+func (pr *ProductRepository) ListById(id int) (model.Product, error) {
 	query, err := pr.Connection.Prepare("SELECT id, name, price FROM products WHERE id=$1")
 
 	if err != nil {
@@ -96,7 +96,7 @@ func (pr *ProductRepository) GetProductById(id int) (model.Product, error) {
 	return product, nil
 }
 
-func (pr *ProductRepository) DeleteProduct(id int) error {
+func (pr *ProductRepository) Delete(id int) error {
 	_, err := pr.Connection.Exec("DELETE FROM products WHERE id=$1", id)
 
 	if err != nil {

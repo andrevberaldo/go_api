@@ -7,17 +7,8 @@
 ## How to Run
 
  - Docker Engine and Docker compose is needed.
- - Run `docker compose up` in the terminal
- - Once the container is running
+ - To start dev mode (dependencies on docker and api on dev mode) run `./scripts/start-dev`
  - The PGAdmin will start at localhost:8080, you can connect with postgres DB and run the following script to create products table.
- ```sql
- CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    price NUMERIC (10, 2)
- )
- ```
- - Run `go run ./cmd/main.go` 
  - To use the **protected routes** on /api path, the request headers must have the fake JWT at `Authorization: fake_token_JWT`
  - Make a GET request to http://localhost:3001/api/products
 
@@ -33,4 +24,3 @@
 
  ## Next steps
  - Unit test
- - Lint 

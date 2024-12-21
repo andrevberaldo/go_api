@@ -9,7 +9,7 @@ import (
 )
 
 func ConnectDB() (*sql.DB, error) {
-	db, err := sql.Open("postgres", os.Getenv("DB_INFO"))
+	db, err := sql.Open("postgres", os.Getenv("DB_CONNECTION_INFO"))
 
 	if err != nil {
 		panic(err)

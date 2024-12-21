@@ -3,21 +3,20 @@ package usecase
 import (
 	"fmt"
 	"products_api/model"
-	"products_api/repository"
 )
 
 type GetProductByIdUseCase struct {
-	repo repository.ProductRepository
+	repository RepositoryInterface
 }
 
-func NewGetProductByIdUseCase(r repository.ProductRepository) GetProductByIdUseCase {
+func NewGetProductByIdUseCase(r RepositoryInterface) GetProductByIdUseCase {
 	return GetProductByIdUseCase{
-		repo: r,
+		repository: r,
 	}
 }
 
-func (gp *GetProductByIdUseCase) Execute(id int) (model.Product, error) {
-	product, err := gp.repo.GetProductById(id)
+func (u *GetProductByIdUseCase) Execute(id int) (model.Product, error) {
+	product, err := u.repository.ListById(id)
 
 	if err != nil {
 		fmt.Printf("Unable to get products")

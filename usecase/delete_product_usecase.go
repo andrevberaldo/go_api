@@ -2,21 +2,20 @@ package usecase
 
 import (
 	"fmt"
-	"products_api/repository"
 )
 
 type DeleteProductUseCase struct {
-	repo repository.ProductRepository
+	Repository RepositoryInterface
 }
 
-func NewDeleteProductUseCase(r repository.ProductRepository) DeleteProductUseCase {
+func NewDeleteProductUseCase(r RepositoryInterface) DeleteProductUseCase {
 	return DeleteProductUseCase{
-		repo: r,
+		Repository: r,
 	}
 }
 
-func (pu *DeleteProductUseCase) Execute(id int) error {
-	err := pu.repo.DeleteProduct(id)
+func (u *DeleteProductUseCase) Execute(id int) error {
+	err := u.Repository.Delete(id)
 
 	if err != nil {
 		fmt.Printf("Unable to delete product id = %v", id)
