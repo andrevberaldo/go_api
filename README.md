@@ -7,7 +7,7 @@
 ## How to Run
 
  - Docker Engine and Docker compose is needed.
- - To start dev mode (dependencies on docker and api on dev mode) run `./scripts/start-dev`
+ - To start dev mode (dependencies on docker and api on dev mode) run `./scripts/start-database`
  - The PGAdmin will start at localhost:8080, you can connect with postgres DB and run the following script to create products table.
  - To use the **protected routes** on /api path, the request headers must have the fake JWT at `Authorization: fake_token_JWT`
  - Make a GET request to http://localhost:3001/api/products
