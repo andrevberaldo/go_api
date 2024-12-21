@@ -46,10 +46,10 @@ func InitializeProductController(server *gin.Engine) {
 	productsRepo := repository.NewProductRepository(dbConnection)
 
 	productController := NewProductController(
-		usecase.NewCreateProductUseCase(productsRepo),
-		usecase.NewGetProductsUseCase(productsRepo),
-		usecase.NewGetProductByIdUseCase(productsRepo),
-		usecase.NewDeleteProductUseCase(productsRepo),
+		usecase.NewCreateProductUseCase(&productsRepo),
+		usecase.NewGetProductsUseCase(&productsRepo),
+		usecase.NewGetProductByIdUseCase(&productsRepo),
+		usecase.NewDeleteProductUseCase(&productsRepo),
 	)
 
 	api := server.Group("/api", middleware.AuthenticateJWT())
