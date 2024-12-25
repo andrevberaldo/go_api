@@ -3,13 +3,14 @@ package usecase
 import (
 	"fmt"
 	"products_api/model"
+	"products_api/repository"
 )
 
 type GetProductByIdUseCase struct {
-	repository RepositoryInterface
+	repository repository.RepositoryInterface
 }
 
-func NewGetProductByIdUseCase(r RepositoryInterface) GetProductByIdUseCase {
+func NewGetProductByIdUseCase(r repository.RepositoryInterface) GetProductByIdUseCase {
 	return GetProductByIdUseCase{
 		repository: r,
 	}

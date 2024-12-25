@@ -3,25 +3,27 @@ package usecase
 import (
 	"fmt"
 	"products_api/model"
+	"products_api/repository"
+	"strconv"
 )
 
 type CreateProductUsecase struct {
-	Repository RepositoryInterface
+	Repository repository.RepositoryInterface
 }
 
-func NewCreateProductUseCase(repository RepositoryInterface) CreateProductUsecase {
+func NewCreateProductUseCase(repository repository.RepositoryInterface) CreateProductUsecase {
 	return CreateProductUsecase{
 		Repository: repository,
 	}
 }
 
 func (u *CreateProductUsecase) Execute(product model.Product) (string, error) {
-	location, err := u.Repository.Save(product)
+	id, err := u.Repository.Save(product)
 
 	if err != nil {
 		fmt.Printf("Error creating new Product")
 		return "", err
 	}
 
-	return location, nil
+	return "/api/products/" + strconv.Itoa(id), nil
 }

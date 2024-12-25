@@ -6,6 +6,20 @@ import (
 	"products_api/model"
 )
 
+var (
+	SAVE_PRODUCT_SQL      = "INSERT INTO products(name, price) VALUES ($1, $2) RETURNING id"
+	LIST_ALL_PRODUCTS_SQL = "SELECT id, name, price FROM products"
+	LIST_BY_ID_SQL        = "SELECT id, name, price FROM products WHERE id=$1"
+	DELETE_BY_ID_SQL      = "DELETE FROM products WHERE id=$1"
+)
+
+type RepositoryInterface interface {
+	Save(product model.Product) (int, error)
+	ListAll() ([]model.Product, error)
+	ListById(id int) (model.Product, error)
+	Delete(id int) error
+}
+
 type ProductRepository struct {
 	Connection *sql.DB
 }
@@ -16,37 +30,32 @@ func NewProductRepository(dbconnection *sql.DB) ProductRepository {
 	}
 }
 
-func (pr *ProductRepository) Save(product model.Product) (string, error) {
-	query, err := pr.Connection.Prepare("INSERT INTO products(name, price) VALUES ($1, $2) RETURNING id")
-
-	if err != nil {
-		fmt.Printf("Error trying to save Product %s", err.Error())
-		return "", err
-	}
-
+func (r *ProductRepository) Save(product model.Product) (int, error) {
 	var id int
 
-	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+	err := r.Connection.
+		QueryRow(SAVE_PRODUCT_SQL, product.Name, product.Price).
+		Scan(&id)
 
 	if err != nil {
 		fmt.Printf("Error trying to save Product %s", err.Error())
-		return "", err
+		return -1, err
 	}
 
-	query.Close()
-
-	return fmt.Sprintf("/api/products/%d", id), nil
+	return id, nil
 }
 
-func (pr *ProductRepository) ListAll() ([]model.Product, error) {
+func (r *ProductRepository) ListAll() ([]model.Product, error) {
 	products := []model.Product{}
 
-	rows, err := pr.Connection.Query("SELECT id, name, price FROM products")
+	rows, err := r.Connection.Query(LIST_ALL_PRODUCTS_SQL)
 
 	if err != nil {
 		fmt.Print("Unable to load products from database")
 		return products, err
 	}
+
+	defer rows.Close()
 
 	var product model.Product
 
@@ -58,46 +67,31 @@ func (pr *ProductRepository) ListAll() ([]model.Product, error) {
 		)
 
 		if err != nil {
-			fmt.Print("Unable to load products from database")
+			fmt.Printf("Cannot parse row into a product entity %v\n", err)
 			return products, err
 		}
 
 		products = append(products, product)
 	}
 
-	rows.Close()
-
 	return products, nil
 }
 
-func (pr *ProductRepository) ListById(id int) (model.Product, error) {
-	query, err := pr.Connection.Prepare("SELECT id, name, price FROM products WHERE id=$1")
-
-	if err != nil {
-		fmt.Printf("Unable to load product_id=%v from database due to %v", id, err.Error())
-		return model.Product{}, err
-	}
-
+func (r *ProductRepository) ListById(id int) (model.Product, error) {
 	var product model.Product
 
-	err = query.QueryRow(id).Scan(
-		&product.ID,
-		&product.Name,
-		&product.Price,
-	)
+	err := r.Connection.QueryRow(LIST_BY_ID_SQL, id).Scan(&product.ID, &product.Name, &product.Price)
 
 	if err != nil {
 		fmt.Printf("Unable to load product_id=%v from database due to %v", id, err.Error())
 		return model.Product{}, err
 	}
-
-	query.Close()
 
 	return product, nil
 }
 
-func (pr *ProductRepository) Delete(id int) error {
-	_, err := pr.Connection.Exec("DELETE FROM products WHERE id=$1", id)
+func (r *ProductRepository) Delete(id int) error {
+	_, err := r.Connection.Exec(DELETE_BY_ID_SQL, id)
 
 	if err != nil {
 		fmt.Printf("Unable to delete product id %v", id)

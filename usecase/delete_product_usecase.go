@@ -2,13 +2,14 @@ package usecase
 
 import (
 	"fmt"
+	"products_api/repository"
 )
 
 type DeleteProductUseCase struct {
-	Repository RepositoryInterface
+	Repository repository.RepositoryInterface
 }
 
-func NewDeleteProductUseCase(r RepositoryInterface) DeleteProductUseCase {
+func NewDeleteProductUseCase(r repository.RepositoryInterface) DeleteProductUseCase {
 	return DeleteProductUseCase{
 		Repository: r,
 	}
