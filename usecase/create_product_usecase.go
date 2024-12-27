@@ -3,15 +3,18 @@ package usecase
 import (
 	"fmt"
 	"products_api/model"
-	"products_api/repository"
 	"strconv"
 )
 
-type CreateProductUsecase struct {
-	Repository repository.RepositoryInterface
+type ICreateRepository interface {
+	Save(product model.Product) (int, error)
 }
 
-func NewCreateProductUseCase(repository repository.RepositoryInterface) CreateProductUsecase {
+type CreateProductUsecase struct {
+	Repository ICreateRepository
+}
+
+func NewCreateProductUseCase(repository ICreateRepository) CreateProductUsecase {
 	return CreateProductUsecase{
 		Repository: repository,
 	}
