@@ -13,13 +13,6 @@ var (
 	DELETE_BY_ID_SQL      = "DELETE FROM products WHERE id=$1"
 )
 
-type RepositoryInterface interface {
-	Save(product model.Product) (int, error)
-	ListAll() ([]model.Product, error)
-	ListById(id int) (model.Product, error)
-	Delete(id int) error
-}
-
 type ProductRepository struct {
 	Connection *sql.DB
 }
